@@ -30,4 +30,11 @@ class Libro
         $stmt = $this->pdo->prepare("DELETE FROM Books WHERE id = ?");
         return $stmt->execute([$id]);
     }
+
+    public function obtenerLibros()
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM Books");
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
 }
