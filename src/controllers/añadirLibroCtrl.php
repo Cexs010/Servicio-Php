@@ -25,10 +25,10 @@ class añadirLibroCtrl
             $exito = $libro->crearLibro($title, $author, $date, $cover, $file);
 
             if ($exito) {
-                $mensaje = 'Libro añadido con éxito';
+                $mensaje = 'Libro agregado con exito';
                 $status = 201;
             } else {
-                $mensaje = 'No se pudo añadir el libro';
+                $mensaje = 'No se pudo agregar el libro';
                 $status = 400;
             }
 
