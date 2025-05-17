@@ -15,21 +15,35 @@ class añadirLibroCtrl
             $body = $request->getBody()->getContents();
             $datos = json_decode($body, true);
 
-            $title = $datos['title'] ?? '';
-            $author = $datos['author'] ?? '';
-            $date = $datos['date'] ?? '';
-            $cover = $datos['cover_image_url'] ?? '';
-            $file = $datos['file_url'] ?? '';
+            $title   = $datos['title'] ?? '';
+            $author  = $datos['author'] ?? '';
+            $date    = $datos['date'] ?? '';
+            $cover   = $datos['cover_image_url'] ?? '';
+            $file    = $datos['file_url'] ?? '';
+            $rolId  = $datos['rol_id'] ?? '';
 
             $libro = new Libro();
-            $exito = $libro->crearLibro($title, $author, $date, $cover, $file);
 
-            if ($exito) {
-                $mensaje = 'Libro agregado con exito';
-                $status = 201;
+            if (!$rolId) {
+                throw new \Exception('Falta el rol_id');
+            }
+
+            if ($rolId == 2) {
+                // Administrador
+                $exito = $libro->crearLibro($title, $author, $date, $cover, $file, $rolId);
+                $mensaje = $exito ? 'Libro agregado con éxito' : 'No se pudo agregar el libro';
+                $status = $exito ? 201 : 400;
+            } elseif ($rolId == 3) {
+                // Colaborador 
+                $exito = false;
+                $mensaje = 'Lógica para colaboradores aún no implementada';
+                $status = 501; // Not Implemented
+
             } else {
-                $mensaje = 'No se pudo agregar el libro';
-                $status = 400;
+                // Usuario no autorizado
+                $exito = false;
+                $mensaje = 'Usuario no autorizado para esta acción';
+                $status = 403;
             }
 
             $payload = json_encode([
