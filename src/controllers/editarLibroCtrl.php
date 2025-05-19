@@ -15,22 +15,32 @@ class editarLibroCtrl
             $body = $request->getBody()->getContents();
             $datos = json_decode($body, true);
 
-            $id = $datos['id'] ?? null;
-            $title = $datos['title'] ?? '';
+            $id     = $datos['id'] ?? null;
+            $title  = $datos['title'] ?? '';
             $author = $datos['author'] ?? '';
-            $date = $datos['date'] ?? '';
-            $cover = $datos['cover_image_url'] ?? '';
-            $file = $datos['file_url'] ?? '';
+            $date   = $datos['date'] ?? '';
+            $cover  = $datos['cover_image_url'] ?? '';
+            $file   = $datos['file_url'] ?? '';
+            $rolId  = $datos['rol_id'] ?? null;
 
             $libro = new Libro();
-            $exito = $libro->editarLibro($id, $title, $author, $date, $cover, $file);
 
-            if ($exito) {
-                $mensaje = 'Libro editado con éxito';
-                $status = 200;
+            if (!$rolId) {
+                throw new \Exception('Falta el rol_id');
+            }
+
+            if ($rolId == 2) {
+                $exito = $libro->editarLibro($id, $title, $author, $date, $cover, $file);
+                $mensaje = $exito ? 'Libro editado con éxito' : 'No se pudo editar el libro';
+                $status = $exito ? 200 : 400;
+            } elseif ($rolId == 3) {
+                $exito = false;
+                $mensaje = 'Los colaboradores no pueden editar libros';
+                $status = 403;
             } else {
-                $mensaje = 'No se pudo editar el libro';
-                $status = 400;
+                $exito = false;
+                $mensaje = 'Usuario no autorizado para esta acción';
+                $status = 403;
             }
 
             $payload = json_encode([
@@ -46,6 +56,8 @@ class editarLibroCtrl
         }
 
         $response->getBody()->write($payload);
-        return $response->withHeader('Content-Type', 'application/json')->withStatus($status ?? 200);
+        return $response
+            ->withHeader('Content-Type', 'application/json')
+            ->withStatus($status ?? 200);
     }
 }

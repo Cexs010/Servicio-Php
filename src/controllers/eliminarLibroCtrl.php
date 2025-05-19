@@ -15,17 +15,27 @@ class eliminarLibroCtrl
             $body = $request->getBody()->getContents();
             $datos = json_decode($body, true);
 
-            $id = $datos['id'] ?? null;
+            $id    = $datos['id'] ?? null;
+            $rolId = $datos['rol_id'] ?? null;
 
             $libro = new Libro();
-            $exito = $libro->eliminarLibro($id);
 
-            if ($exito) {
-                $mensaje = 'Libro eliminado con éxito';
-                $status = 200;
+            if (!$rolId) {
+                throw new \Exception('Falta el rol_id');
+            }
+
+            if ($rolId == 2) {
+                $exito = $libro->eliminarLibro($id);
+                $mensaje = $exito ? 'Libro eliminado con éxito' : 'No se pudo eliminar el libro';
+                $status = $exito ? 200 : 400;
+            } elseif ($rolId == 3) {
+                $exito = false;
+                $mensaje = 'Lógica para colaboradores aún no implementada';
+                $status = 501;
             } else {
-                $mensaje = 'No se pudo eliminar el libro';
-                $status = 400;
+                $exito = false;
+                $mensaje = 'Usuario no autorizado para esta acción';
+                $status = 403;
             }
 
             $payload = json_encode([
@@ -41,6 +51,8 @@ class eliminarLibroCtrl
         }
 
         $response->getBody()->write($payload);
-        return $response->withHeader('Content-Type', 'application/json')->withStatus($status ?? 200);
+        return $response
+            ->withHeader('Content-Type', 'application/json')
+            ->withStatus($status ?? 200);
     }
 }
