@@ -19,10 +19,10 @@ class Libro
         return $stmt->execute([$title, $author, $date, $cover, $file]);
     }
 
-    public function editarLibro($id, $title, $author, $date, $cover, $file)
+    public function editarLibro($id, $title, $author, $date)
     {
-        $stmt = $this->pdo->prepare("UPDATE Books SET title = ?, author = ?, date = ?, cover_image_url = ?, file_url = ? WHERE id = ?");
-        return $stmt->execute([$title, $author, $date, $cover, $file, $id]);
+        $stmt = $this->pdo->prepare("UPDATE Books SET title = ?, author = ?, date = ? WHERE id = ?");
+        return $stmt->execute([$title, $author, $date, $id]);
     }
 
     public function eliminarLibro($id)
