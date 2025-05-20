@@ -19,8 +19,6 @@ class editarLibroCtrl
             $title  = $datos['title'] ?? '';
             $author = $datos['author'] ?? '';
             $date   = $datos['date'] ?? '';
-            $cover  = $datos['cover_image_url'] ?? '';
-            $file   = $datos['file_url'] ?? '';
             $rolId  = $datos['rol_id'] ?? null;
 
             $libro = new Libro();
@@ -30,7 +28,7 @@ class editarLibroCtrl
             }
 
             if ($rolId == 2) {
-                $exito = $libro->editarLibro($id, $title, $author, $date, $cover, $file);
+                $exito = $libro->editarLibro($id, $title, $author, $date);
                 $mensaje = $exito ? 'Libro editado con éxito' : 'No se pudo editar el libro';
                 $status = $exito ? 200 : 400;
             } elseif ($rolId == 3) {
