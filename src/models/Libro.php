@@ -31,10 +31,18 @@ class Libro
         return $stmt->execute([$id]);
     }
 
-    public function obtenerLibros()
+    public function obtenerLibros($search = '')
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM Books");
-        $stmt->execute();
+        if (!empty($search)) {
+            // Buscar por título o autor si hay búsqueda
+            $stmt = $this->pdo->prepare("SELECT * FROM Books WHERE title LIKE :search OR author LIKE :search");
+            $stmt->execute(['search' => "%$search%"]);
+        } else {
+            // Obtener todos si no hay búsqueda
+            $stmt = $this->pdo->prepare("SELECT * FROM Books");
+            $stmt->execute();
+        }
+
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 }
