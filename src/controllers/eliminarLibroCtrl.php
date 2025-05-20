@@ -17,21 +17,27 @@ class eliminarLibroCtrl
 
             $id    = $datos['id'] ?? null;
             $rolId = $datos['rol_id'] ?? null;
+            $userId  = $datos['user_id'] ?? null;
 
             $libro = new Libro();
 
             if (!$rolId) {
                 throw new \Exception('Falta el rol_id');
             }
+            if (!$userId) throw new \Exception('Falta el user_id');
 
             if ($rolId == 2) {
                 $exito = $libro->eliminarLibro($id);
                 $mensaje = $exito ? 'Libro eliminado con éxito' : 'No se pudo eliminar el libro';
                 $status = $exito ? 200 : 400;
             } elseif ($rolId == 3) {
-                $exito = false;
-                $mensaje = 'Lógica para colaboradores aún no implementada';
-                $status = 501;
+                $datosSolicitud = json_encode([
+                    'id' => $id
+                ]);
+
+                $exito = $libro->guardarSolicitud('eliminar', $datosSolicitud, $userId);
+                $mensaje = $exito ? 'Solicitud de eliminación enviada para aprobación' : 'No se pudo registrar la solicitud';
+                $status = $exito ? 202 : 400;
             } else {
                 $exito = false;
                 $mensaje = 'Usuario no autorizado para esta acción';

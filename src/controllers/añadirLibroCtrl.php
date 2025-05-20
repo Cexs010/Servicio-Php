@@ -21,11 +21,15 @@ class añadirLibroCtrl
             $cover   = $datos['cover_image_url'] ?? '';
             $file    = $datos['file_url'] ?? '';
             $rolId  = $datos['rol_id'] ?? '';
+            $userId = $datos['user_id'] ?? null;
 
             $libro = new Libro();
 
             if (!$rolId) {
-                throw new \Exception('Falta el rol_id');
+                throw new \Exception('Falta el id_user');
+            }
+            if (!$userId) {
+                throw new \Exception('Falta el user_id');
             }
 
             if ($rolId == 2) {
@@ -34,11 +38,18 @@ class añadirLibroCtrl
                 $mensaje = $exito ? 'Libro agregado con éxito' : 'No se pudo agregar el libro';
                 $status = $exito ? 201 : 400;
             } elseif ($rolId == 3) {
-                // Colaborador 
-                $exito = false;
-                $mensaje = 'Lógica para colaboradores aún no implementada';
-                $status = 501; // Not Implemented
+                // Colaborador crea solicitud de "crear"
+                $datosSolicitud = json_encode([
+                    'title' => $title,
+                    'author' => $author,
+                    'date' => $date,
+                    'cover_image_url' => $cover,
+                    'file_url' => $file
+                ]);
 
+                $exito = $libro->guardarSolicitud('crear', $datosSolicitud, $userId);
+                $mensaje = $exito ? 'Solicitud de creación enviada para aprobación' : 'No se pudo registrar la solicitud';
+                $status = $exito ? 202 : 400;
             } else {
                 // Usuario no autorizado
                 $exito = false;

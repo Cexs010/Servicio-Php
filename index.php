@@ -9,6 +9,7 @@ use App\Controllers\añadirLibroCtrl;
 use App\Controllers\editarLibroCtrl;
 use App\Controllers\eliminarLibroCtrl;
 use App\Controllers\obtenerLibrosCtrl;
+use App\Controllers\solicitudesCtrl;
 
 $app = AppFactory::create();
 $app->setBasePath('/Servicio-Php');
@@ -34,6 +35,18 @@ $app->delete('/EliminarLibro', function (Request $request, Response $response) {
 $app->get('/ObtenerLibros', function (Request $request, Response $response) {
     $controller = new obtenerLibrosCtrl();
     return $controller->obtenerLibros($request, $response, []);
+});
+
+// Obtener solicitudes pendientes
+$app->get('/SolicitudesPendientes', function (Request $request, Response $response) {
+    $controller = new solicitudesCtrl();
+    return $controller->obtenerSolicitudesPendientes($request, $response, []);
+});
+
+// Aprobar o rechazar solicitud
+$app->post('/ProcesarSolicitud', function (Request $request, Response $response) {
+    $controller = new solicitudesCtrl();
+    return $controller->procesarSolicitud($request, $response, []);
 });
 
 $app->run();
