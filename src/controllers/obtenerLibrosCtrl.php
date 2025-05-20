@@ -12,8 +12,12 @@ class obtenerLibrosCtrl
     public function obtenerLibros(Request $request, Response $response, $args)
     {
         try {
+            // Obtener parámetro ?search=
+            $params = $request->getQueryParams();
+            $search = $params['search'] ?? '';
+
             $libro = new Libro();
-            $libros = $libro->obtenerLibros();
+            $libros = $libro->obtenerLibros($search); // pasar $search al modelo
 
             if ($libros) {
                 $mensaje = 'Libros obtenidos con éxito';
