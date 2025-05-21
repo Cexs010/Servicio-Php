@@ -12,12 +12,26 @@ class obtenerLibrosCtrl
     public function obtenerLibros(Request $request, Response $response, $args)
     {
         try {
-            // Obtener parámetro ?search=
+            // Obtener parámetros ?search= y ?random=
             $params = $request->getQueryParams();
             $search = $params['search'] ?? '';
+            $random = isset($params['random']) ? (int)$params['random'] : null;
 
+            // Validar que no vengan ambos parámetros al mismo tiempo
+            if (!empty($search) && !is_null($random)) {
+                $payload = json_encode([
+                    'success' => false,
+                    'message' => 'No puedes usar "search" y "random" al mismo tiempo.'
+                ]);
+                $response->getBody()->write($payload);
+                return $response
+                    ->withHeader('Content-Type', 'application/json')
+                    ->withStatus(400);
+            }
+
+            // Obtener libros según el caso
             $libro = new Libro();
-            $libros = $libro->obtenerLibros($search); // pasar $search al modelo
+            $libros = $libro->obtenerLibros($search, $random);
 
             if ($libros) {
                 $mensaje = 'Libros obtenidos con éxito';
